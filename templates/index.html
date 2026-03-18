@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.I.F.E - AI Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: {
+                            primary: 'var(--theme-primary)',
+                            glow: 'var(--theme-glow)',
+                        },
+                        ios: { green: '#34c759', red: '#ff3b30' }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* CSS Variables for Deep Dynamic Theming */
+        :root {
+            /* 🔵 Standard Blue Chip Theme */
+            --theme-primary: #007aff;
+            --theme-glow: rgba(0, 122, 255, 0.6);
+            --theme-bg-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop');
+            --ai-grad-1: rgba(10, 132, 255, 0.95);
+            --ai-grad-2: rgba(88, 86, 214, 0.95);
+            
+            /* Glass & Text Colors */
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 1);
+            --inner-bg: rgba(255, 255, 255, 0.5);
+            --page-overlay-1: rgba(248, 250, 252, 0.3);
+            --page-overlay-2: rgba(248, 250, 252, 0.5);
+            --text-main: #0f172a; /* slate-900 */
+            --text-muted: #475569; /* slate-600 */
+        }
+
+        [data-theme="rose"] {
+            /* 🌸 Aesthetic Rose Gold Theme for Nancy Mam */
+            --theme-primary: #ff2d55; 
+            --theme-glow: rgba(255, 45, 85, 0.6);
+            /* Gorgeous Pink Architectural Building */
+            --theme-bg-image: url('https://images.unsplash.com/photo-1524360408226-9d629a8a6411?q=80&w=2070&auto=format&fit=crop'); 
+            --ai-grad-1: rgba(255, 45, 85, 0.90);
+            --ai-grad-2: rgba(255, 143, 171, 0.90);
+            
+            /* Rose Gold Glass & Deep Burgundy Text */
+            --glass-bg: rgba(255, 240, 245, 0.80); /* LavenderBlush tint */
+            --glass-border: rgba(255, 192, 203, 0.8); /* Pinkish border */
+            --inner-bg: rgba(255, 228, 225, 0.65); /* Misty rose inner cards */
+            --page-overlay-1: rgba(255, 240, 245, 0.4);
+            --page-overlay-2: rgba(255, 228, 225, 0.6);
+            --text-main: #4a0e1c; /* Deep elegant rose text */
+            --text-muted: #9e475f; /* Soft rose text */
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+        
+        body {
+            background-image: linear-gradient(var(--page-overlay-1), var(--page-overlay-2)), var(--theme-bg-image);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: #f8fafc;
+            transition: all 0.7s ease-in-out;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border-radius: 28px;
+            transition: all 0.5s ease;
+        }
+
+        .card-content-area {
+            background-color: var(--inner-bg);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.5s ease;
+        }
+
+        .ai-engine-bg {
+            background: linear-gradient(135deg, var(--ai-grad-1), var(--ai-grad-2));
+            border-radius: 20px;
+            box-shadow: inset 0 2px 15px rgba(0,0,0,0.15);
+            transition: background 0.5s ease;
+        }
+    </style>
+</head>
+<body data-theme="default" class="flex h-screen overflow-hidden font-sans p-6 gap-6 transition-colors duration-500">
+
+    <div class="w-80 flex flex-col gap-6 glass-card p-8 z-10 shrink-0 relative">
+        
+        <div id="nancyBadge" class="opacity-0 transition-opacity duration-700 absolute -top-4 -right-4 bg-gradient-to-r from-[#ff8fa3] to-[#ff2d55] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-[0_4px_15px_rgba(255,45,85,0.4)] transform rotate-6 border border-white/80 whitespace-nowrap z-50">
+            Prepared for Nancy Mam 🎀
+        </div>
+
+        <div class="text-center mt-4">
+            <h2 class="text-4xl font-extrabold text-theme-primary tracking-tighter drop-shadow-sm transition-colors duration-300">S.I.F.E</h2>
+            <p class="text-[color:var(--text-main)] font-black text-xl mt-1 tracking-wide transition-colors duration-300">Terminal</p>
+        </div>
+        
+        <hr class="border-[color:var(--glass-border)] w-16 mx-auto mt-2 transition-colors">
+
+        <button onclick="toggleTheme()" class="w-full py-3 bg-white/70 hover:bg-white rounded-xl border border-[color:var(--glass-border)] shadow-sm flex items-center justify-center gap-3 transition-all duration-300 group">
+            <span class="text-xl group-hover:scale-110 transition-transform">✨</span>
+            <span id="themeBtnText" class="font-bold text-sm text-[color:var(--text-main)] uppercase tracking-widest transition-colors">Trainer Theme</span>
+        </button>
+        
+        <div class="flex flex-col gap-3 mt-2 card-content-area p-5">
+            <label class="text-xs font-extrabold text-[color:var(--text-muted)] uppercase tracking-wider transition-colors">Days: <span id="daysLabel" class="text-theme-primary transition-colors">100</span></label>
+            <input type="range" id="daysSlider" min="30" max="365" value="100" oninput="updateSliderLabel()" onchange="fetchData()" class="w-full accent-theme-primary cursor-pointer transition-colors">
+        </div>
+        
+        <div class="mt-2 flex items-center justify-center gap-2 p-4 bg-white/70 rounded-2xl border border-[color:var(--glass-border)] transition-colors">
+            <span class="h-3 w-3 bg-ios-green rounded-full shadow-[0_0_10px_rgba(52,199,89,1)] animate-pulse"></span>
+            <span class="text-ios-green font-black text-sm tracking-widest uppercase">Online</span>
+        </div>
+
+        <div class="mt-auto flex flex-col gap-4 card-content-area p-5">
+            <div class="flex items-center gap-3">
+                <div class="h-8 w-8 rounded-xl bg-ios-green shadow-lg"></div>
+                <div class="text-xs font-bold text-[color:var(--text-main)] transition-colors">Bullish Green<br><span class="text-[color:var(--text-muted)] font-normal transition-colors">#34C759</span></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="h-8 w-8 rounded-xl bg-ios-red shadow-lg"></div>
+                <div class="text-xs font-bold text-[color:var(--text-main)] transition-colors">Bearish Red<br><span class="text-[color:var(--text-muted)] font-normal transition-colors">#FF3B30</span></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div id="dynamicLegendColor" class="h-8 w-8 rounded-xl bg-theme-primary shadow-lg transition-colors duration-300"></div>
+                <div class="text-xs font-bold text-[color:var(--text-main)] transition-colors"><span id="dynamicLegendText">Apple Blue</span><br><span class="text-[color:var(--text-muted)] font-normal transition-colors">Dynamic Theme</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto pr-4 pb-4">
+        <div class="flex flex-col gap-8">
+
+            <div class="glass-card p-10 flex flex-col min-h-[400px]">
+                <h3 class="text-3xl font-extrabold text-[color:var(--text-main)] mb-2 tracking-tight transition-colors">Data Explorer</h3>
+                <p class="text-[color:var(--text-muted)] text-sm mb-6 transition-colors">Raw Sensex data for forecast analysis</p>
+                <div class="overflow-y-auto max-h-[350px] bg-white/60 rounded-2xl border border-[color:var(--glass-border)] shadow-md transition-colors">
+                    <table id="dataTable" class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 bg-white/90 backdrop-blur text-xs font-extrabold text-[color:var(--text-main)] tracking-wider transition-colors">
+                            <tr><th class="p-5">Date</th><th class="p-5">Open</th><th class="p-5">High</th><th class="p-5">Low</th><th class="p-5">Close</th><th class="p-5">Volume</th></tr>
+                        </thead>
+                        <tbody class="text-sm font-semibold text-[color:var(--text-main)] divide-y divide-white/50 transition-colors"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="glass-card p-10 flex flex-col">
+                <h3 class="text-3xl font-extrabold text-[color:var(--text-main)] mb-2 tracking-tight transition-colors">Analytics</h3>
+                <p class="text-[color:var(--text-muted)] text-sm mb-6 transition-colors">Interactive historical chart</p>
+                <div id="plotlyChart" class="w-full h-[550px] bg-white/60 rounded-2xl border border-[color:var(--glass-border)] p-3 shadow-md transition-colors"></div>
+            </div>
+
+            <div class="glass-card p-10 flex flex-col min-h-[380px]">
+                <h3 class="text-3xl font-extrabold text-[color:var(--text-main)] mb-2 tracking-tight transition-colors">AI Engine</h3>
+                <p class="text-[color:var(--text-muted)] text-sm mb-8 transition-colors">Shape AI-driven stock market predictions</p>
+                
+                <div class="ai-engine-bg w-full flex items-center justify-between p-12 shadow-md border border-white/50">
+                    <div class="flex flex-col items-center gap-6">
+                        <button onclick="runPrediction()" class="w-72 py-4 bg-white text-theme-primary rounded-full font-black text-xl shadow-[0_4px_20px_var(--theme-glow)] hover:scale-105 transition-all duration-300">
+                            Standard Prediction
+                        </button>
+                        
+                        <div id="standardResult" class="hidden w-full max-w-sm bg-white/95 backdrop-blur rounded-2xl p-6 text-center shadow-xl border border-white mt-2 animate-bounce">
+                            <div class="text-xs text-[color:var(--text-muted)] font-extrabold uppercase tracking-widest mb-1 transition-colors">Target: <span id="stdDate" class="text-theme-primary transition-colors"></span></div>
+                            <div class="text-4xl font-extrabold text-[color:var(--text-main)] transition-colors">₹ <span id="stdPrice"></span></div>
+                            <div id="stdDelta" class="text-xl font-bold mt-3"></div>
+                        </div>
+                    </div>
+                    
+                    <img src="https://images.unsplash.com/photo-1677756119517-756a188d2d94?q=80&w=400&auto=format&fit=crop" class=" rounded-sm w-64 h-64 object-contain opacity-90 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]" alt="AI Neural Net">
+                </div>
+            </div>
+
+            <div class="glass-card p-10 flex flex-col min-h-[420px]">
+                <div class="flex justify-between items-start mb-8">
+                    <div>
+                        <h3 class="text-3xl font-extrabold text-[color:var(--text-main)] mb-2 tracking-tight transition-colors">Scenario Testing</h3>
+                        <p class="text-[color:var(--text-muted)] text-sm transition-colors">Predictions for custom market scenarios</p>
+                    </div>
+                    <img src="https://cdn-icons-png.flaticon.com/512/2620/2620586.png" class="w-20 h-20 opacity-80 drop-shadow-lg" alt="Bull">
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-5 mb-10 card-content-area p-8 shadow-md">
+                    <div class="flex flex-col gap-1"><label class="text-[10px] font-extrabold text-[color:var(--text-muted)] uppercase tracking-widest transition-colors">Date</label><input type="date" id="advDate" class="p-3 text-sm bg-white/90 border border-[color:var(--glass-border)] rounded-xl outline-none focus:ring-2 focus:ring-theme-primary text-[color:var(--text-main)] transition-all" required></div>
+                    <div class="flex flex-col gap-1"><label class="text-[10px] font-extrabold text-[color:var(--text-muted)] uppercase tracking-widest transition-colors">Close</label><input type="number" id="advClose" placeholder="₹" class="p-3 text-sm bg-white/90 border border-[color:var(--glass-border)] rounded-xl outline-none focus:ring-2 focus:ring-theme-primary text-[color:var(--text-main)] transition-all"></div>
+                    <div class="flex flex-col gap-1"><label class="text-[10px] font-extrabold text-[color:var(--text-muted)] uppercase tracking-widest transition-colors">Open</label><input type="number" id="advOpen" placeholder="₹" class="p-3 text-sm bg-white/90 border border-[color:var(--glass-border)] rounded-xl outline-none focus:ring-2 focus:ring-theme-primary text-[color:var(--text-main)] transition-all"></div>
+                    <div class="flex flex-col gap-1"><label class="text-[10px] font-extrabold text-[color:var(--text-muted)] uppercase tracking-widest transition-colors">High</label><input type="number" id="advHigh" placeholder="₹" class="p-3 text-sm bg-white/90 border border-[color:var(--glass-border)] rounded-xl outline-none focus:ring-2 focus:ring-theme-primary text-[color:var(--text-main)] transition-all"></div>
+                    <div class="flex flex-col gap-1"><label class="text-[10px] font-extrabold text-[color:var(--text-muted)] uppercase tracking-widest transition-colors">Low</label><input type="number" id="advLow" placeholder="₹" class="p-3 text-sm bg-white/90 border border-[color:var(--glass-border)] rounded-xl outline-none focus:ring-2 focus:ring-theme-primary text-[color:var(--text-main)] transition-all"></div>
+                    <div class="flex flex-col gap-1"><label class="text-[10px] font-extrabold text-[color:var(--text-muted)] uppercase tracking-widest transition-colors">Volume</label><input type="number" id="advVol" placeholder="#" class="p-3 text-sm bg-white/90 border border-[color:var(--glass-border)] rounded-xl outline-none focus:ring-2 focus:ring-theme-primary text-[color:var(--text-main)] transition-all"></div>
+                </div>
+
+                <button onclick="runAdvancedPrediction()" class="px-10 py-4 bg-[color:var(--text-main)] text-white hover:opacity-90 rounded-2xl font-black text-lg shadow-lg transition-all duration-300 w-fit">
+                    Run Scenario Prediction
+                </button>
+
+                <div id="advResult" class="hidden mt-10 bg-white/90 backdrop-blur rounded-2xl p-7 border border-[color:var(--glass-border)] shadow-xl items-center justify-between transition-all">
+                    <span class="font-extrabold text-[color:var(--text-muted)] uppercase tracking-widest text-sm transition-colors">Scenario Results</span>
+                    <div class="flex items-center gap-6 text-3xl">
+                        <span class="font-black text-[color:var(--text-main)] transition-colors">₹<span id="advPrice"></span></span>
+                        <span id="advDelta" class="font-black text-2xl"></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // THEME TOGGLE LOGIC
+        function toggleTheme() {
+            const body = document.body;
+            const btnText = document.getElementById('themeBtnText');
+            const legendText = document.getElementById('dynamicLegendText');
+            const badge = document.getElementById('nancyBadge');
+            
+            if (body.getAttribute('data-theme') === 'default') {
+                body.setAttribute('data-theme', 'rose');
+                btnText.innerText = 'Return to Default';
+                legendText.innerText = 'Rose Gold';
+                // Reveal the custom trainer badge smoothly
+                badge.classList.remove('opacity-0');
+            } else {
+                body.setAttribute('data-theme', 'default');
+                btnText.innerText = 'Trainer Theme';
+                legendText.innerText = 'Apple Blue';
+                // Hide the badge
+                badge.classList.add('opacity-0');
+            }
+            // Re-draw chart so the SMA line and font colors update!
+            fetchData();
+        }
+
+        function updateSliderLabel() { document.getElementById('daysLabel').innerText = document.getElementById('daysSlider').value; }
+
+        async function fetchData() {
+            const days = document.getElementById('daysSlider').value;
+            const res = await fetch(`/api/data?days=${days}`);
+            const data = await res.json();
+            
+            const tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = '';
+            data.forEach(r => {
+                // Table rows inherit the deep burgundy text in Rose mode automatically via CSS variables
+                tbody.innerHTML += `<tr class="hover:bg-white/80 transition-colors"><td class="p-5">${r.Date.split(' ')[0]}</td><td class="p-5">${r.Open.toFixed(2)}</td><td class="p-5">${r.High.toFixed(2)}</td><td class="p-5">${r.Low.toFixed(2)}</td><td class="p-5 font-black">${r.Close.toFixed(2)}</td><td class="p-5 opacity-70">${r.Volume}</td></tr>`;
+            });
+
+            const dates = data.map(r => r.Date);
+            
+            // Fetch active theme states to dynamically color the Plotly Chart!
+            const isRoseTheme = document.body.getAttribute('data-theme') === 'rose';
+            const dynamicSmaColor = isRoseTheme ? '#ff2d55' : '#007aff';
+            const dynamicFontColor = isRoseTheme ? '#4a0e1c' : '#0f172a'; // Deep rose vs Slate
+            
+            Plotly.newPlot('plotlyChart', [
+                {x: dates, close: data.map(r => r.Close), high: data.map(r => r.High), low: data.map(r => r.Low), open: data.map(r => r.Open), type: 'candlestick', name: 'Sensex', increasing: {line: {color: '#34c759'}}, decreasing: {line: {color: '#ff3b30'}}},
+                {x: dates, y: data.map(r => r.SMA_50), type: 'scatter', mode: 'lines', name: '50 SMA', line: {color: dynamicSmaColor, width: 2.5}},
+                {x: dates, y: data.map(r => r.SMA_200), type: 'scatter', mode: 'lines', name: '200 SMA', line: {color: '#8e44ad', width: 2.5}}
+            ], {
+                paper_bgcolor: 'rgba(255,255,255,0)', plot_bgcolor: 'rgba(255,255,255,0)', 
+                font: {color: dynamicFontColor, family: 'sans-serif', size: 13}, 
+                margin: {t: 20, l: 50, r: 20, b: 40}, 
+                xaxis: {rangeslider: {visible: false}, gridcolor: 'rgba(0,0,0,0.05)'}, 
+                yaxis: {gridcolor: 'rgba(0,0,0,0.05)'},
+                autosize: true
+            }, {responsive: true});
+        }
+
+        async function runPrediction() {
+            const res = await fetch('/api/predict');
+            const data = await res.json();
+            if(!data.error) {
+                document.getElementById('stdDate').innerText = data.target_date;
+                document.getElementById('stdPrice').innerText = data.predicted_price.toLocaleString();
+                const deltaEl = document.getElementById('stdDelta');
+                deltaEl.innerHTML = data.difference > 0 ? `▲ +₹${data.difference}` : `▼ ₹${Math.abs(data.difference)}`;
+                deltaEl.className = data.difference > 0 ? 'text-ios-green font-extrabold text-xl mt-3' : 'text-ios-red font-extrabold text-xl mt-3';
+                document.getElementById('standardResult').classList.remove('hidden');
+            }
+        }
+
+        async function runAdvancedPrediction() {
+            const payload = {
+                date: document.getElementById('advDate').value,
+                close: document.getElementById('advClose').value
+            };
+
+            if(!payload.date || !payload.close) { alert("Date and Close Price are required."); return; }
+            
+            const res = await fetch('/api/predict_custom', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if(!data.error) {
+                document.getElementById('advPrice').innerText = data.predicted_price.toLocaleString();
+                const deltaEl = document.getElementById('advDelta');
+                deltaEl.innerHTML = data.difference > 0 ? `▲ +₹${data.difference}` : `▼ ₹${Math.abs(data.difference)}`;
+                deltaEl.className = data.difference > 0 ? 'text-ios-green font-extrabold' : 'text-ios-red font-extrabold';
+                document.getElementById('advResult').classList.remove('hidden');
+                document.getElementById('advResult').classList.add('flex');
+            }
+        }
+
+        window.onload = fetchData;
+    </script>
+</body>
+</html>
