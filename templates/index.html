@@ -294,6 +294,8 @@
                 deltaEl.innerHTML = data.difference > 0 ? `▲ +₹${data.difference}` : `▼ ₹${Math.abs(data.difference)}`;
                 deltaEl.className = data.difference > 0 ? 'text-ios-green font-extrabold text-xl mt-3' : 'text-ios-red font-extrabold text-xl mt-3';
                 document.getElementById('standardResult').classList.remove('hidden');
+            } else {
+                alert("AI Engine Error: " + data.error);
             }
         }
 
@@ -318,6 +320,8 @@
                 deltaEl.className = data.difference > 0 ? 'text-ios-green font-extrabold' : 'text-ios-red font-extrabold';
                 document.getElementById('advResult').classList.remove('hidden');
                 document.getElementById('advResult').classList.add('flex');
+            } else {
+                alert("Scenario Error: " + data.error);
             }
         }
 
