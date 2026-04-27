@@ -21,8 +21,17 @@ try:
     scaler = joblib.load(SCALER_FILE)
     print("[INFO] AI Brain Loaded Successfully.")
 except Exception as e:
-    print(f"[WARNING] AI Model not loaded. Error: {e}")
+    print(f"[ERROR] AI Model failed to load: {e}")
     model, scaler = None, None
+
+@app.route('/health')
+def health():
+    return jsonify({
+        "status": "online",
+        "model_loaded": model is not None,
+        "scaler_loaded": scaler is not None,
+        "base_dir": BASE_DIR
+    })
 
 @app.route('/')
 def home():
