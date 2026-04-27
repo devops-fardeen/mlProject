@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: sife-forecasting-engine
+    env: python
+    buildCommand: pip install -r Requirements.txt
+    startCommand: gunicorn app:app
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: TF_CPP_MIN_LOG_LEVEL
+        value: 2
