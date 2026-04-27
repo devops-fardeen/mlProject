@@ -275,13 +275,32 @@
                 {x: dates, y: data.map(r => r.SMA_50), type: 'scatter', mode: 'lines', name: '50 SMA', line: {color: dynamicSmaColor, width: 2.5}},
                 {x: dates, y: data.map(r => r.SMA_200), type: 'scatter', mode: 'lines', name: '200 SMA', line: {color: '#8e44ad', width: 2.5}}
             ], {
-                paper_bgcolor: 'rgba(255,255,255,0)', plot_bgcolor: 'rgba(255,255,255,0)', 
-                font: {color: dynamicFontColor, family: 'sans-serif', size: 13}, 
-                margin: {t: 20, l: 50, r: 20, b: 40}, 
-                xaxis: {rangeslider: {visible: false}, gridcolor: 'rgba(0,0,0,0.05)'}, 
-                yaxis: {gridcolor: 'rgba(0,0,0,0.05)'},
+                paper_bgcolor: 'rgba(255,255,255,0)', 
+                plot_bgcolor: 'rgba(255,255,255,0)', 
+                font: {color: dynamicFontColor, family: 'sans-serif', size: window.innerWidth < 768 ? 10 : 12}, 
+                margin: {t: 30, l: 10, r: 10, b: 30}, 
+                xaxis: {
+                    rangeslider: {visible: false}, 
+                    gridcolor: 'rgba(0,0,0,0.05)',
+                    automargin: true
+                }, 
+                yaxis: {
+                    gridcolor: 'rgba(0,0,0,0.05)',
+                    automargin: true,
+                    side: 'right'
+                },
+                legend: {
+                    orientation: 'h',
+                    yanchor: 'bottom',
+                    y: 1.02,
+                    xanchor: 'right',
+                    x: 1
+                },
                 autosize: true
-            }, {responsive: true});
+            }, {
+                responsive: true,
+                displayModeBar: false
+            });
         }
 
         async function runPrediction() {
@@ -326,6 +345,9 @@
         }
 
         window.onload = fetchData;
+        window.onresize = function() {
+            Plotly.Plots.resize('plotlyChart');
+        };
     </script>
 </body>
 </html>
