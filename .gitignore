@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+bin/
+include/
+lib/
+share/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project Specific
+# We ignore generated CSV data files if we want the app to fetch fresh data on deployment
+# However, if these are required for the app to start, you may want to un-comment them
+# sensex_data_clean.csv
+# sensex_data_perfect.csv
+
+# Large Model Data
+# Keeping the .keras and .pkl files is fine for now as they are small (~400KB)
+# But if you train larger models, you should move them to external storage
+# model_data/X_train.npy
+# model_data/y_train.npy
+
+# Logs and Graphs
+project_graphs/
+model_data/training_loss_chart.png
+static/ai_engine.png
+
+# Environment variables
+.env
+.flaskenv
