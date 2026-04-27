@@ -15,21 +15,27 @@ MODEL_FILE = os.path.join(BASE_DIR, "model_data", "sensex_model.keras")
 SCALER_FILE = os.path.join(BASE_DIR, "model_data", "price_scaler.pkl")
 WINDOW_SIZE = 60
 
-# Load AI safely
-try:
-    model = load_model(MODEL_FILE)
-    scaler = joblib.load(SCALER_FILE)
-    print("[INFO] AI Brain Loaded Successfully.")
-except Exception as e:
-    print(f"[ERROR] AI Model failed to load: {e}")
-    model, scaler = None, None
+# Lazy loader for AI Model to prevent startup timeouts on Render
+def get_model():
+    global model, scaler
+    if model is None:
+        try:
+            model = load_model(MODEL_FILE)
+            scaler = joblib.load(SCALER_FILE)
+            print("[INFO] AI Brain Loaded Successfully.")
+        except Exception as e:
+            print(f"[ERROR] AI Model failed to load: {e}")
+    return model, scaler
+
+model, scaler = None, None
 
 @app.route('/health')
 def health():
+    m, s = get_model()
     return jsonify({
         "status": "online",
-        "model_loaded": model is not None,
-        "scaler_loaded": scaler is not None,
+        "model_loaded": m is not None,
+        "scaler_loaded": s is not None,
         "base_dir": BASE_DIR
     })
 
@@ -49,8 +55,9 @@ def get_data():
 
 @app.route('/api/predict', methods=['GET'])
 def predict():
-    if model is None or scaler is None:
-        return jsonify({"error": "AI Model is down."}), 500
+    m, s = get_model()
+    if m is None or s is None:
+        return jsonify({"error": "AI Model is still loading or failed to load."}), 500
 
     try:
         df = pd.read_csv(DATA_FILE)
@@ -58,11 +65,11 @@ def predict():
         last_price = float(last_60_days[-1])
         last_date = str(df['Date'].iloc[-1]).split(' ')[0]
         
-        last_60_days_scaled = scaler.transform(last_60_days.reshape(-1, 1))
+        last_60_days_scaled = s.transform(last_60_days.reshape(-1, 1))
         X_input = np.array([last_60_days_scaled]).reshape(1, WINDOW_SIZE, 1)
         
-        predicted_decimal = model.predict(X_input, verbose=0)
-        predicted_price = float(scaler.inverse_transform(predicted_decimal)[0][0])
+        predicted_decimal = m.predict(X_input, verbose=0)
+        predicted_price = float(s.inverse_transform(predicted_decimal)[0][0])
         
         return jsonify({
             "target_date": "Tomorrow",
@@ -76,8 +83,9 @@ def predict():
 @app.route('/api/predict_custom', methods=['POST'])
 def predict_custom():
     """Advanced Scenario Testing using all Trainer parameters"""
-    if model is None or scaler is None:
-        return jsonify({"error": "AI Model is down."}), 500
+    m, s = get_model()
+    if m is None or s is None:
+        return jsonify({"error": "AI Model is still loading or failed to load."}), 500
 
     try:
         data = request.get_json()
@@ -102,11 +110,11 @@ def predict_custom():
         custom_60_days = np.append(last_59_days, custom_close)
         
         # 4. Predict
-        custom_60_scaled = scaler.transform(custom_60_days.reshape(-1, 1))
+        custom_60_scaled = s.transform(custom_60_days.reshape(-1, 1))
         X_input = np.array([custom_60_scaled]).reshape(1, WINDOW_SIZE, 1)
         
-        predicted_decimal = model.predict(X_input, verbose=0)
-        predicted_price = float(scaler.inverse_transform(predicted_decimal)[0][0])
+        predicted_decimal = m.predict(X_input, verbose=0)
+        predicted_price = float(s.inverse_transform(predicted_decimal)[0][0])
         
         return jsonify({
             "target_date": target_date,
