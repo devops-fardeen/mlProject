@@ -55,7 +55,6 @@ Thumbs.db
 # Logs and Graphs
 project_graphs/
 model_data/training_loss_chart.png
-static/ai_engine.png
 
 # Environment variables
 .env
